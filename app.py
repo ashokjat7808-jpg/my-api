@@ -1,7 +1,28 @@
-from flask import Flask
+from flask import Flask, request
+import requests
 
 app = Flask(__name__)
 
-@app.route("/")
+TOKEN = "8789588958:AAFmBXyEgd4zlAjDrjhD8zLS7qqhFzyYAGA"
+
+@app.route("/", methods=["GET"])
 def home():
-    return "Hello Ashok API is running!"
+    return "Bot is running!"
+
+@app.route("/", methods=["POST"])
+def webhook():
+    data = request.get_json()
+
+    if "message" in data:
+        chat_id = data["message"]["chat"]["id"]
+        text = data["message"].get("text", "")
+
+        reply = f"आपने भेजा: {text}"
+
+        url = f"https://api.telegram.org/bot{TOKEN}/sendMessage"
+        requests.post(url, json={
+            "chat_id": chat_id,
+            "text": reply
+        })
+
+    return "ok"
