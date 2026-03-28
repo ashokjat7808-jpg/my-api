@@ -17,10 +17,11 @@ def webhook():
         chat_id = data["message"]["chat"]["id"]
         text = data["message"].get("text", "")
 
-        reply = f"आपने भेजा: {text}"
+        reply = "आपने भेजा: " + text
 
-        url = f"https://api.telegram.org/bot{TOKEN}/sendMessage"
-        requests.post(url, json={
+        send_url = "https://api.telegram.org/bot" + TOKEN + "/sendMessage"
+
+        requests.post(send_url, json={
             "chat_id": chat_id,
             "text": reply
         })
