@@ -18,7 +18,10 @@ def start(user_id):
 def daily(user_id):
     if user_id in users:
         users[user_id]["coins"] += 50
-        return jsonify({"message": "Daily bonus added", "coins": users[user_id]["coins"]})
+        return jsonify({
+            "message": "Daily bonus added",
+            "coins": users[user_id]["coins"]
+        })
     return "User not found"
 
 @app.route("/balance/<user_id>")
@@ -26,3 +29,6 @@ def balance(user_id):
     if user_id in users:
         return jsonify(users[user_id])
     return "User not found"
+
+if __name__ == "__main__":
+    app.run(host="0.0.0.0", port=10000)
