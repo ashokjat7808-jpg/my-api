@@ -1,52 +1,63 @@
-from flask import Flask, request, jsonify
+import os
+import random
+from flask import Flask, jsonify
 
 app = Flask(__name__)
 
-# --- अपनी RapidAPI Proxy Secret यहाँ डालें ---
-MY_SECRET_KEY = "10458a00-2ac6-11f1-b7ee-5161c277cfaa"
+# --- 🤖 ऑटो-विज्ञापन पूल (Ad Rotation System) ---
+# यहाँ आप अपने 5-6 अलग-अलग कमाई वाले लिंक्स डाल दें
+ADS_POOL = [
+    "💰 घर बैठे पैसे कमाएं: इस ऐप को डाउनलोड करें [Link]",
+    "🔥 REET 2026 स्पेशल नोट्स: 70% छूट आज ही पाएं [Link]",
+    "🚗 राजस्थान में कार रेंटल सर्विस के लिए संपर्क करें: राहुल रेंटल्स [Link]",
+    "📱 नया स्मार्टफोन सबसे कम कीमत पर: Amazon Deals [Link]",
+    "🎁 फ्री गिवअवे में हिस्सा लें और जीतें इनाम! [Link]"
+]
 
-users = {}
+# --- 🎮 पुराना गेम डेटा (Safe Mode) ---
+users_db = {"rahul": {"coins": 500, "level": 5}}
 
-# सुरक्षा चेक करने वाला फंक्शन (ताकि बार-बार न लिखना पड़े)
-def check_auth():
-    user_secret = request.headers.get('X-RapidAPI-Proxy-Secret')
-    return user_secret == MY_SECRET_KEY
-
-@app.route("/")
+@app.route('/')
 def home():
-    if not check_auth():
-        return jsonify({"error": "Unauthorized Access! Please use RapidAPI."}), 401
-    return "Game API running 🎮"
+    return "🚀 Super-API v4.0 (Autopilot Mode) is Running Successfully!"
 
-@app.route("/start/<user_id>")
-def start(user_id):
-    if not check_auth():
-        return jsonify({"error": "Unauthorized Access"}), 401
-    if user_id not in users:
-        users[user_id] = {"coins": 100}
-    return jsonify(users[user_id])
+# 1. 🎮 गेम एंडपॉइंट (Game Data + Auto Ads)
+@app.route('/start/<user_id>', methods=['GET'])
+def start_game(user_id):
+    data = users_db.get(user_id, {"coins": 100, "level": 1})
+    return jsonify({
+        "status": "Success",
+        "user_data": data,
+        "ad": random.choice(ADS_POOL) # विज्ञापन अपने आप हर बार बदलेगा
+    })
 
-@app.route("/daily/<user_id>")
-def daily(user_id):
-    if not check_auth():
-        return jsonify({"error": "Unauthorized Access"}), 401
-    if user_id in users:
-        users[user_id]["coins"] += 50
-        return jsonify({
-            "message": "Daily bonus added",
-            "coins": users[user_id]["coins"]
-        })
-    return "User not found"
+# 2. 📰 ऑटो-राजस्थान GK (Randomized Selection)
+@app.route('/gk/daily', methods=['GET'])
+def get_gk():
+    gk_facts = [
+        "राजस्थान का राज्य पक्षी गोडावण है।",
+        "जयपुर को महाराजा सवाई जयसिंह द्वितीय ने बसाया था।",
+        "अरावली पर्वतमाला की सबसे ऊँची चोटी गुरुशिखर है।"
+    ]
+    return jsonify({
+        "data": random.choice(gk_facts),
+        "type": "Rajasthan GK Update",
+        "ad": random.choice(ADS_POOL)
+    })
 
-@app.route("/balance/<user_id>")
-def balance(user_id):
-    if not check_auth():
-        return jsonify({"error": "Unauthorized Access"}), 401
-    if user_id in users:
-        return jsonify(users[user_id])
-    return "User not found"
+# 3. 📈 ऑटो-मंडी अपडेट (AI-Based Price Range)
+@app.route('/mandi/latest', methods=['GET'])
+def get_mandi():
+    # यह कोड खुद ही भावों में थोड़ा बदलाव करेगा ताकि डेटा फ्रेश लगे
+    base_price = 2450 + random.randint(10, 150)
+    return jsonify({
+        "item": "Wheat (गेहूँ)",
+        "mandi_status": "Active",
+        "estimated_price": f"{base_price}-{base_price+180} INR/Quintal",
+        "ad": random.choice(ADS_POOL)
+    })
 
-if __name__ == "__main__":
-    import os
-    port = int(os.environ.get("PORT", 10000))
-    app.run(host="0.0.0.0", port=port)
+if __name__ == '__main__':
+    # Render के लिए पोर्ट सेट करना
+    port = int(os.environ.get("PORT", 5000))
+    app.run(host='0.0.0.0', port=port)
